@@ -47,7 +47,7 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Test keypoints network')
-    # general
+    # general 
     parser.add_argument('--cfg',
                         help='experiment configure file name',
                         required=True,

@@ -84,9 +84,8 @@ class CocoDataset(Dataset):
                     self.dataset
                 )
             )
-
     def _get_image_path(self, file_name):
-        images_dir = os.path.join(self.root, 'images')
+        images_dir = os.path.join(self.root, 'images')    #Vaizdu direktorija
         dataset = 'test2017' if 'test' in self.dataset else self.dataset
         if self.data_format == 'zip':
             return os.path.join(images_dir, dataset) + '.zip@' + file_name
@@ -99,15 +98,15 @@ class CocoDataset(Dataset):
             index (int): Index
 
         Returns:
-            tuple: Tuple (image, target). target is the object returned by ``coco.loadAnns``.
+            tuple: Tuple (image, target). target is the object returned by ``coco.loadAnns``.   #IMPORTANT: Might be the target file that gets selected. Worth investigating.
         """
         coco = self.coco
         img_id = self.ids[index]
-        ann_ids = coco.getAnnIds(imgIds=img_id)
+        ann_ids = coco.getAnnIds(imgIds=img_id)     #Examine here.
         target = coco.loadAnns(ann_ids)
 
         file_name = coco.loadImgs(img_id)[0]['file_name']
-
+        
         if self.data_format == 'zip':
             img = zipreader.imread(
                 self._get_image_path(file_name),
@@ -118,7 +117,15 @@ class CocoDataset(Dataset):
                 self._get_image_path(file_name),
                 cv2.IMREAD_COLOR | cv2.IMREAD_IGNORE_ORIENTATION
             )
+          
+        #Writing the taken input into a file
+        write_path = "/home/student_2/HRNet2/output/coco_kpt/pose_higher_hrnet/file.txt"
 
+        write_mode = 'a' if os.path.exists(write_path) else 'w'
+        with open(write_path, write_mode) as f:
+            f.write(self._get_image_path(file_name) + "\n")    
+        print("Now analyzing file: ", self._get_image_path(file_name))
+        
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         if self.transform is not None:
